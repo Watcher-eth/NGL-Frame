@@ -142,7 +142,7 @@ export default async function Home({
     kvSetSession(previousFrame, sessionState);
     secondImage = await generateAnswerImage(
       urlFid,
-      "Kingston, Jamaica",
+      "New York, NY",
       sessionState.questions[0]!
     );
   }
