@@ -102,7 +102,7 @@ export default async function Home({
   //CHECK if question or answer
   // const url = previousFrame?.postBody?.untrustedData.url!;
   //const parts = url.split("/"); // This splits the URL string into an array of parts
-  const urlFid = "1";
+  const urlFid = "1317";
   const userFid = previousFrame?.postBody?.untrustedData?.fid;
   let isCreator;
   console.log("Step", state.step);

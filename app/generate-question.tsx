@@ -6,8 +6,12 @@ import { colors } from "./consts";
 import { questionsAndIcons } from "./consts";
 import { getRandomNumber } from "./utils";
 import { NeynarAPIClient } from "@neynar/nodejs-sdk";
+import Image from "next/image";
 const interRegPath = join(process.cwd(), "public/LilitaOne-Regular.ttf");
 let interReg = fs.readFileSync(interRegPath);
+const vercelUrl = process.env.VERCEL_URL;
+const isVercel = vercelUrl && vercelUrl?.length > 0;
+
 export function getRandomColor() {
   const randomIndex = Math.floor(Math.random() * colors.length);
   return colors[randomIndex];
@@ -18,6 +22,7 @@ export async function generatePreviewImage(userFid: string) {
   const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
 
   const answerProfile = await client.lookupUserByFid(Number(userFid));
+  const baseUrl = process.env.BASE_URL || "http://localhost:3000"; // Adjust localhost port as necessary
 
   const imageSvg = await satori(
     <div
@@ -51,11 +56,11 @@ export async function generatePreviewImage(userFid: string) {
           <img
             src={answerProfile.result.user.pfp.url}
             style={{
-              height: "22rem",
-              width: "22rem",
+              height: "24rem",
+              width: "24rem",
               borderRadius: "100%",
               marginRight: "1rem",
-              marginLeft: "9rem",
+              marginLeft: "10rem",
             }}
           />
         ) : (
@@ -74,6 +79,7 @@ export async function generatePreviewImage(userFid: string) {
             display: "flex",
             flexDirection: "column",
             paddingLeft: "1.5rem",
+            marginTop: "1.2rem",
           }}
         >
           <div
@@ -81,14 +87,26 @@ export async function generatePreviewImage(userFid: string) {
               fontSize: "10rem",
 
               color: "black",
-              lineHeight: "9rem",
+              lineHeight: "8.8rem",
               marginBottom: "1.5rem",
             }}
           >
             Ask me anything
           </div>
-          <div style={{ fontSize: "3.2rem", color: "darkgray" }}>
-            [Anonymously]
+          <div
+            style={{
+              fontSize: "3.2rem",
+              color: "darkgray",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <div> [Anonymously]</div>
+
+            <img
+              src={`${baseUrl}/images/Popdadix.png`}
+              style={{ height: "1.9rem", width: "21rem", marginTop: "0.5rem" }}
+            />
           </div>
         </div>
       </div>
