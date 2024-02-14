@@ -22,7 +22,7 @@ export async function generateAnswerImage(
 
   // @ts-ignore
   const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
-  const user = await client.lookupUserByFid(Number("5"));
+  const user = await client.lookupUserByFid(Number(userFid));
 
   let userName = user ? user.result.user.displayName : "Jesse";
   let userPFP = user ? user.result.user.pfp.url : "";
