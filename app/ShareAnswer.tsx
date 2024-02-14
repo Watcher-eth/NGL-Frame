@@ -8,18 +8,19 @@ import { getRandomNumber } from "./utils";
 import { NeynarAPIClient } from "@neynar/nodejs-sdk";
 import "./globals.css";
 import { getAnswer } from "./datastore";
+import { FrameActionDataParsedAndHubContext } from "frames.js";
 const interRegPath = join(process.cwd(), "public/Qilka.otf");
 let interReg = fs.readFileSync(interRegPath);
 
 // Message should contain poll no
 export async function shareAnswer(
-  validMessage: FrameActionMessage,
+  validMessage: FrameActionDataParsedAndHubContext,
   questionID: string
 ) {
   //TODO: GET from URL
   let questionId = questionID.length > 0 ? questionID : "";
   //console.log("SUBMISSION MESSAGE ", validMessage);
-  const fid = validMessage?.data.fid;
+  const fid = validMessage?.requesterFid;
 
   // @ts-ignore
   const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY);
