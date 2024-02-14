@@ -9,7 +9,6 @@ export type sessionStateType = {
   user: string;
   questions: Question[];
   question: Question;
-  // questions: GetPollsResponse[];
 };
 
 // Initial state
@@ -18,7 +17,6 @@ let sessionState: sessionStateType = {
   questions: [],
   user: "",
   question: {} as Question,
-  // questions: [] as GetPollsResponse[],
 };
 
 // Function to get the current session state

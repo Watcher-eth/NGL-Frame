@@ -1,5 +1,3 @@
-import { GetPollsResponse } from "./datastore";
-
 // types.ts
 export type sessionStateQuestionType = {
   // pollId: string;
