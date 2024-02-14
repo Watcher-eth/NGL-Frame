@@ -17,7 +17,7 @@ export function getRandomColor() {
 export async function generatePreviewImage(userFid: string) {
   const client = new NeynarAPIClient(process.env.NEYNAR_API_KEY!);
 
-  const answerProfile = await client.lookupUserByFid(Number("5"));
+  const answerProfile = await client.lookupUserByFid(Number(userFid));
 
   const imageSvg = await satori(
     <div

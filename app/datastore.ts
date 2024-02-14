@@ -5,7 +5,6 @@ const client = await db.connect();
 
 // Interface for setting a new question
 export interface SetQuestionRequest {
-  askerId: string;
   receiverId: string;
   questionText: string;
 }
@@ -36,10 +35,8 @@ export async function setQuestion(
 ): Promise<boolean> {
   try {
     const { rowCount } = await client.sql`
-      INSERT INTO questions (id, asker_id, receiver_id, question_text)
-      VALUES (${uuid()}, ${request.askerId}, ${request.receiverId}, ${
-      request.questionText
-    });
+      INSERT INTO questions (id, receiver_id, question_text)
+      VALUES (${uuid()}, ${request.receiverId}, ${request.questionText});
     `;
 
     return rowCount > 0;
@@ -48,12 +45,11 @@ export async function setQuestion(
     throw new Error(error.message);
   }
 }
-
 export async function getQuestions(receiverId: string): Promise<Question[]> {
   try {
     const results = await client.sql`
       SELECT id, question_text AS question FROM questions
-      WHERE receiver_id = ${receiverId};
+      WHERE receiver_id = ${receiverId} AND answer_text IS NULL;
     `;
     return results.rows.map((row) => ({
       id: row.id,

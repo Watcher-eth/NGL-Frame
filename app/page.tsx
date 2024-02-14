@@ -16,7 +16,6 @@ import {
   FollowResponseUser,
   User,
 } from "@neynar/nodejs-sdk/build/neynar-api/v1";
-import { shareAnswer } from "./ShareAnswer";
 import { Question, getQuestions, setAnswer, setQuestion } from "./datastore";
 import {
   State,
@@ -45,11 +44,15 @@ const initialState = {
 const reducer: FrameReducer<State> = (state, action) => {
   //console.log("ACTION ", action);
   //TODO: SHUFFLE NO ADD
+  const buttonIndex = action.postBody?.untrustedData.buttonIndex;
+
+  const step =
+    state.step === 2 && buttonIndex === 2 ? state.step : state.step + 1;
 
   return {
     pollId: state.pollId,
     uuid: randomUUID(),
-    step: state.step + 1,
+    step: step,
   };
 };
 
@@ -99,28 +102,32 @@ export default async function Home({
   //CHECK if question or answer
   // const url = previousFrame?.postBody?.untrustedData.url!;
   //const parts = url.split("/"); // This splits the URL string into an array of parts
-  const urlFid = "1171";
+  const urlFid = "1";
   const userFid = previousFrame?.postBody?.untrustedData?.fid;
-  const isCreator = false;
+  let isCreator;
+  console.log("Step", state.step);
+  if (previousFrame?.postBody?.untrustedData) {
+    console.log("Is creator", isCreator);
+    isCreator = String(userFid) === urlFid;
+  }
   firstImage = await generatePreviewImage(urlFid); //await generatePreviewImage(urlFid!);
 
   //If question get input
   //Create your own and share
-  if (!isCreator && sessionState.question.question.length > 0) {
+
+  if (!isCreator && state.step === 2) {
     console.log("LOG 2", state.step);
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
-
+    // await setQuestion({
+    //   askerId: String(userFid),
+    //   receiverId: String(urlFid),
+    //   questionText: previousFrame.postBody?.untrustedData.inputText!,
+    //});
     secondImage = await generateConfirmationImage(
       sessionState.question.question
     );
-
-    await setQuestion({
-      askerId: String(userFid),
-      receiverId: String(urlFid),
-      questionText: previousFrame.postBody?.untrustedData.inputText!,
-    });
   }
 
   if (
@@ -132,44 +139,61 @@ export default async function Home({
   }
 
   //If answer get questions
-  if (isCreator && sessionState.questions.length > 0) {
-    sessionState.questions = await getQuestions(String(userFid));
+  if (isCreator && state.step === 2 && !sessionState.questions[0]) {
+    const questions = await getQuestions(String(1)); // Retrieve questions for receiverId 1
+    console.log("CREATOR STEP ", questions);
+
+    sessionState.questions = questions;
     kvSetSession(previousFrame, sessionState);
   }
+
   if (isCreator && state.step === 2) {
     sessionState.question = sessionState.questions[0]!;
-    console.log("Step 2", sessionState.questions[0]);
     kvSetSession(previousFrame, sessionState);
-    secondImage = await generateAnswerImage(
-      urlFid,
-      "New York, NY",
-      sessionState.questions[0]!
+    console.log("Step 2", sessionState.questions[0]);
+
+    secondImage = await generateConfirmationImage(
+      sessionState.questions[0]?.question!
     );
   }
   //TODO: GET QUESTIONS AND SHUFFLE
-  const shuffleAndDisplayFollowings = () => {
-    const shuffled = shuffleArray([...sessionState.questions]); // Create a shallow copy and shuffle
-    sessionState.questions = shuffled.slice(0, 4).map((value) => {
-      return {
-        id: value.id,
-        question: value.question,
-      };
-    });
-    console.log("SHUFFLED ?", sessionState.questions);
-    // updateSessionState({
-    //   rishFollowings: Buffer.from(
-    //     JSON.stringify(rishFollowingDecoded)
-    //   ).toString("base64url"),
-    // });
+
+  const rotateArrayToLeft = () => {
+    if (sessionState.questions.length > 0) {
+      // Remove the first item and push it to the end of the array
+      const array = sessionState.questions; // This removes the first element
+
+      const firstItem = array.shift(); // This removes the first element
+      if (firstItem !== undefined) {
+        array.push(firstItem);
+        sessionState.questions = array;
+      } // And adds it to the end
+    }
+
+    console.log("ROTATED ?", sessionState.questions);
+
+    // Assuming kvSetSession and previousFrame are defined in your context
     kvSetSession(previousFrame, sessionState);
   };
+
+  if (
+    previousFrame.postBody?.untrustedData.buttonIndex === 2 &&
+    state.step === 2
+  ) {
+    console.log("SHUFFLING ");
+    rotateArrayToLeft();
+  }
 
   //TODO: after second step store answer and question
   if (isCreator && sessionState.answer.length < 2 && state.step === 3) {
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
 
-    thirdImage = await shareAnswer(frameMessage!, urlFid);
+    thirdImage = await generateAnswerImage(
+      String(userFid),
+      sessionState.answer,
+      sessionState.question
+    );
     await setAnswer({
       questionId: sessionState.question.id,
       answerText: sessionState.answer,
@@ -221,29 +245,33 @@ export default async function Home({
         ) : null}
         {state.step === 1 && isCreator ? (
           <FrameButton onClick={dispatch}>See your questions</FrameButton>
-        ) : (
-          <FrameButton onClick={dispatch}>Answer</FrameButton>
-        )}
+        ) : state.step === 1 ? (
+          <FrameButton onClick={dispatch}>Send your question</FrameButton>
+        ) : null}
+        {state.step === 1 && isCreator ? null : state.step === 1 ? (
+          <FrameButton onClick={dispatch}>See your questions</FrameButton>
+        ) : null}
+
         {state.step === 2 && isCreator ? (
           <FrameInput text="Your answer..." />
         ) : null}
-        {state.step === 2 && !isCreator ? (
-          <FrameButton onClick={dispatch}>Next question</FrameButton>
+        {state.step === 2 && isCreator ? (
+          <FrameButton onClick={dispatch}>Answer</FrameButton>
+        ) : state.step === 2 ? (
+          <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
         ) : null}
         {state.step === 2 && isCreator ? (
-          <FrameButton onClick={dispatch}>Get your own AMA link</FrameButton>
-        ) : (
-          <FrameButton onClick={dispatch}>Confirm Answer</FrameButton>
-        )}
+          <FrameButton onClick={dispatch}>Next question</FrameButton>
+        ) : null}
         {state.step === 3 && isCreator ? (
           <FrameButton href={"http://tinyurl.com/4sv38u6c"}>
-            Share your AMA with your friends
+            Share your AMA
           </FrameButton>
-        ) : (
+        ) : state.step === 3 ? (
           <FrameButton href={"http://tinyurl.com/4sv38u6c"}>
-            Share your answer
+            Share your AMA
           </FrameButton>
-        )}
+        ) : null}
       </FrameContainer>
     </div>
   );

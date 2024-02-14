@@ -17,6 +17,7 @@ let sessionState: sessionStateType = {
   questions: [],
   user: "",
   question: {} as Question,
+  // questions: [] as GetPollsResponse[],
 };
 
 // Function to get the current session state
