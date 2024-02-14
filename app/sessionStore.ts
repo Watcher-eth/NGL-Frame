@@ -56,7 +56,7 @@ export async function kvGetSession(
   let state: sessionStateType = {
     answer: "",
     user: "",
-    question: {} as Question,
+    question: { question: "", id: "" } as Question,
     questions: [],
   };
   if (

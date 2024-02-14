@@ -7,6 +7,7 @@ import {
   getPreviousFrame,
   useFramesReducer,
   validateActionSignature,
+  getFrameMessage,
 } from "frames.js/next/server";
 import Link from "next/link";
 import { NeynarAPIClient } from "@neynar/nodejs-sdk";
@@ -122,7 +123,11 @@ export default async function Home({
     });
   }
 
-  if (!isCreator && sessionState.question.question.length > 0 && state.step === 3) {
+  if (
+    !isCreator &&
+    sessionState.question.question.length > 0 &&
+    state.step === 3
+  ) {
     thirdImage = await generatePreviewImage(String(userFid!));
   }
 
@@ -133,6 +138,7 @@ export default async function Home({
   }
   if (isCreator && state.step === 2) {
     sessionState.question = sessionState.questions[0]!;
+    console.log("Step 2", sessionState.questions[0]);
     kvSetSession(previousFrame, sessionState);
     secondImage = await generateAnswerImage(
       urlFid,
