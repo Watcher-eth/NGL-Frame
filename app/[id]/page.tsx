@@ -77,7 +77,7 @@ export default async function Home({
     rishId = previousFrame.postBody?.untrustedData?.fid;
     voter = String(rishId);
   }
-  console.log("PREV FRAME", previousFrame);
+  //console.log("PREV FRAME", previousFrame);
 
   const frameMessage = await getFrameMessage(previousFrame.postBody, {
     // ...DEBUG_HUB_OPTIONS,
@@ -122,11 +122,10 @@ export default async function Home({
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
-    // await setQuestion({
-    //   askerId: String(userFid),
-    //   receiverId: String(urlFid),
-    //   questionText: previousFrame.postBody?.untrustedData.inputText!,
-    //});
+    await setQuestion({
+      receiverId: String(urlFid),
+      questionText: previousFrame.postBody?.untrustedData.inputText!,
+    });
     secondImage = await generateConfirmationImage(
       sessionState.question.question
     );
@@ -137,13 +136,13 @@ export default async function Home({
     sessionState.question.question.length > 0 &&
     state.step === 3
   ) {
-    thirdImage = await generatePreviewImage(String(userFid!));
+    thirdImage = await generatePreviewImage(String(urlFid!));
   }
 
   //If answer get questions
   if (isCreator && state.step === 2 && !sessionState.questions[0]) {
-    const questions = await getQuestions(String(1)); // Retrieve questions for receiverId 1
-    console.log("CREATOR STEP ", questions);
+    const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
+    console.log("CREATOR STEP 2", urlFid, userFid, questions);
 
     sessionState.questions = questions;
     kvSetSession(previousFrame, sessionState);
@@ -166,7 +165,7 @@ export default async function Home({
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
-    console.log("CREATOR STEP ", questions);
+    console.log("Not CREATOR STEP 2", urlFid, userFid, questions);
 
     sessionState.questions = questions;
     kvSetSession(previousFrame, sessionState);
@@ -251,6 +250,7 @@ export default async function Home({
       const encodedConf = encodeURIComponent(thirdImage!)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
+      kvDeleteSession(previousFrame);
 
       const confSVG = `data:image/svg+xml,${encodedConf}`;
       return confSVG;
@@ -293,8 +293,10 @@ export default async function Home({
           <FrameButton onClick={dispatch}>Next question</FrameButton>
         ) : null}
         {state.step === 3 && isCreator ? (
-          <FrameButton target={`http://ngl-fc.vercel.app/${userFid}`}>
-            Share your AMA
+          <FrameButton
+            target={`http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
+          >
+            Share your Answer
           </FrameButton>
         ) : state.step === 3 ? (
           <FrameButton target={`http://ngl-fc.vercel.app/${userFid}`}>

@@ -28,6 +28,7 @@ export interface SetAnswerRequest {
 export interface AnswerResponse {
   question: string;
   answerText: string;
+  userId: number;
 }
 
 export async function setQuestion(
@@ -81,7 +82,7 @@ export async function getAnswer(
 ): Promise<AnswerResponse | undefined> {
   try {
     const result = await client.sql`
-      SELECT question_text AS question, answer_text
+      SELECT receiver_id AS id, question_text AS question, answer_text
       FROM questions
       WHERE id = ${questionId};
     `;
@@ -90,6 +91,7 @@ export async function getAnswer(
       return {
         question: result.rows[0]!.question,
         answerText: result.rows[0]!.answer_text,
+        userId: result.rows[0]!.id,
       };
     } else {
       return undefined;

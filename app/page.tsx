@@ -269,7 +269,7 @@ export default async function Home({
         ) : null}
         {state.step === 3 && isCreator ? (
           <FrameButton href={"http://tinyurl.com/4sv38u6c"}>
-            Share your AMA
+            Share your Answer
           </FrameButton>
         ) : state.step === 3 ? (
           <FrameButton href={"http://tinyurl.com/4sv38u6c"}>
