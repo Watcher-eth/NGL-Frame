@@ -294,12 +294,12 @@ export default async function Home({
         ) : null}
         {state.step === 3 && isCreator ? (
           <FrameButton
-            target={`http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
+            href={`http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
           >
             Share your Answer
           </FrameButton>
         ) : state.step === 3 ? (
-          <FrameButton target={`http://ngl-fc.vercel.app/${userFid}`}>
+          <FrameButton href={`http://ngl-fc.vercel.app/${userFid}`}>
             Share your AMA
           </FrameButton>
         ) : null}

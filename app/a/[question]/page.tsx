@@ -173,7 +173,7 @@ export default async function Home({
         {state.step === 2 ? (
           <FrameButton
             onClick={dispatch}
-            target={`http://ngl-fc.vercel.app/${userFid}`}
+            href={`http://ngl-fc.vercel.app/${userFid}`}
           >
             Share your AMA
           </FrameButton>
