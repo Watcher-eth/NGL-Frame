@@ -75,7 +75,7 @@ export default async function Home({
     rishId = previousFrame.postBody?.untrustedData?.fid;
     voter = String(rishId);
   }
-  console.log("PREV FRAME", previousFrame.url);
+  console.log("PREV FRAME", previousFrame);
 
   const frameMessage = await getFrameMessage(previousFrame.postBody, {
     // ...DEBUG_HUB_OPTIONS,
