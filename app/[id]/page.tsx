@@ -11,27 +11,27 @@ import {
 } from "frames.js/next/server";
 import Link from "next/link";
 import { NeynarAPIClient } from "@neynar/nodejs-sdk";
-import { generateConfirmationImage } from "./generateConfirmationImage";
+import { generateConfirmationImage } from "../generateConfirmationImage";
 import {
   FollowResponseUser,
   User,
 } from "@neynar/nodejs-sdk/build/neynar-api/v1";
-import { Question, getQuestions, setAnswer, setQuestion } from "./datastore";
+import { Question, getQuestions, setAnswer, setQuestion } from "../datastore";
 import {
   State,
   sessionStateAnswerType,
   sessionStateQuestionType,
-} from "./types";
+} from "../types";
 import { randomUUID, randomInt } from "crypto";
-import { generatePreviewImage } from "./generate-question";
-import { generateAnswerImage } from "./generateAnswerConfirmation copy";
+import { generatePreviewImage } from "../generate-question";
+import { generateAnswerImage } from "../generateAnswerConfirmation copy";
 import {
   kvDeleteSession,
   kvGetSession,
   kvSetSession,
   sessionStateType,
-} from "./sessionStore";
-import { shuffleArray } from "./utils";
+} from "../sessionStore";
+import { shuffleArray } from "../utils";
 let questions: Question[];
 let rishId: number;
 let allFollowers: any[];
@@ -59,8 +59,10 @@ const reducer: FrameReducer<State> = (state, action) => {
 // This is a react server component only
 export default async function Home({
   searchParams,
+  params,
 }: {
   searchParams: Record<string, string>;
+  params: { id: number };
 }) {
   let rishId: number | undefined;
   let voter: string | undefined;
@@ -75,13 +77,13 @@ export default async function Home({
     rishId = previousFrame.postBody?.untrustedData?.fid;
     voter = String(rishId);
   }
-  console.log("PREV FRAME", previousFrame.url);
+  console.log("PREV FRAME", previousFrame);
 
   const frameMessage = await getFrameMessage(previousFrame.postBody, {
     // ...DEBUG_HUB_OPTIONS,
     fetchHubContext: true,
   });
-  console.log("Search params", searchParams);
+  console.log("Search params", searchParams, params.id);
 
   const [state, dispatch] = useFramesReducer<State>(
     reducer,
@@ -102,24 +104,20 @@ export default async function Home({
   //CHECK if question or answer
   // const url = previousFrame?.postBody?.untrustedData.url!;
   //const parts = url.split("/"); // This splits the URL string into an array of parts
-  const urlFid = "1317";
+  const urlFid = params.id;
   const userFid = previousFrame?.postBody?.untrustedData?.fid;
   let isCreator;
   console.log("Step", state.step);
   if (previousFrame?.postBody?.untrustedData) {
-    console.log("Is creator", isCreator);
-    isCreator = String(userFid) === urlFid;
+    isCreator = String(userFid) === String(urlFid);
+    console.log("Is creator", userFid, urlFid, isCreator);
   }
-  firstImage = await generatePreviewImage(urlFid); //await generatePreviewImage(urlFid!);
+  firstImage = await generatePreviewImage(String(urlFid)); //await generatePreviewImage(urlFid!);
 
   //If question get input
   //Create your own and share
 
-  if (
-    !isCreator &&
-    state.step === 2 &&
-    previousFrame.postBody?.untrustedData.buttonIndex === 2
-  ) {
+  if (!isCreator && state.step === 2) {
     console.log("LOG 2", state.step);
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
@@ -160,24 +158,50 @@ export default async function Home({
       sessionState.questions[0]?.question!
     );
   }
-  //TODO: GET QUESTIONS AND SHUFFLE
 
-  const rotateArrayToLeft = () => {
+  if (
+    !isCreator &&
+    state.step === 2 &&
+    !sessionState.questions[0] &&
+    previousFrame.postBody?.untrustedData?.buttonIndex === 2
+  ) {
+    const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
+    console.log("CREATOR STEP ", questions);
+
+    sessionState.questions = questions;
+    kvSetSession(previousFrame, sessionState);
+  }
+
+  if (
+    !isCreator &&
+    state.step === 2 &&
+    previousFrame.postBody?.untrustedData?.buttonIndex === 2
+  ) {
+    sessionState.question = sessionState.questions[0]!;
+    kvSetSession(previousFrame, sessionState);
+    console.log("Step 2", sessionState.questions[0]);
+
+    secondImage = await generateConfirmationImage(
+      sessionState.questions[0]?.question!
+    );
+  }
+  //TODO: GET QUESTIONS AND SHUFFLE
+  const rotateArrayToLeft = async () => {
     if (sessionState.questions.length > 0) {
       // Remove the first item and push it to the end of the array
-      const array = sessionState.questions; // This removes the first element
+      const array = [...sessionState.questions]; // Clone the array to avoid direct mutation
 
       const firstItem = array.shift(); // This removes the first element
       if (firstItem !== undefined) {
-        array.push(firstItem);
-        sessionState.questions = array;
-      } // And adds it to the end
+        array.push(firstItem); // And adds it to the end
+        sessionState.questions = array; // Update the session state with the new array
+
+        console.log("ROTATED ?", sessionState.questions);
+
+        // Ensure kvSetSession is awaited if it returns a Promise
+        await kvSetSession(previousFrame, sessionState);
+      }
     }
-
-    console.log("ROTATED ?", sessionState.questions);
-
-    // Assuming kvSetSession and previousFrame are defined in your context
-    kvSetSession(previousFrame, sessionState);
   };
 
   if (
@@ -185,7 +209,7 @@ export default async function Home({
     state.step === 2
   ) {
     console.log("SHUFFLING ");
-    rotateArrayToLeft();
+    await rotateArrayToLeft(); // Ensure this call is awaited if within an async function or handled accordingly if not
   }
 
   //TODO: after second step store answer and question
@@ -240,6 +264,7 @@ export default async function Home({
       What are you doing here?. <Link href="/debug">Debug</Link>
       <FrameContainer
         postUrl="/frames"
+        pathname={`${urlFid}/`}
         state={state}
         previousFrame={previousFrame}
       >
@@ -268,11 +293,11 @@ export default async function Home({
           <FrameButton onClick={dispatch}>Next question</FrameButton>
         ) : null}
         {state.step === 3 && isCreator ? (
-          <FrameButton href={"http://tinyurl.com/4sv38u6c"}>
+          <FrameButton target={`http://ngl-fc.vercel.app/${userFid}`}>
             Share your AMA
           </FrameButton>
         ) : state.step === 3 ? (
-          <FrameButton href={"http://tinyurl.com/4sv38u6c"}>
+          <FrameButton target={`http://ngl-fc.vercel.app/${userFid}`}>
             Share your AMA
           </FrameButton>
         ) : null}
