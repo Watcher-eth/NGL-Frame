@@ -83,7 +83,7 @@ export default async function Home({
     // ...DEBUG_HUB_OPTIONS,
     fetchHubContext: true,
   });
-  console.log("Search params", searchParams, params.id);
+  console.log("Search params", searchParams);
 
   const [state, dispatch] = useFramesReducer<State>(
     reducer,
@@ -115,10 +115,10 @@ export default async function Home({
     console.log("Answer", answer);
     thirdImage = await generateAnswerImage(
       String(answer?.userId),
-      answer?.answerText,
+      answer?.answerText!,
       {
         id: urlParam,
-        question: answer?.question,
+        question: answer?.question!,
       }
     );
   }
