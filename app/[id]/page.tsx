@@ -241,6 +241,7 @@ export default async function Home({
       const encodedConf = encodeURIComponent(secondImage!)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
+      kvDeleteSession(previousFrame);
 
       const confSVG = `data:image/svg+xml,${encodedConf}`;
       return confSVG;
@@ -250,7 +251,6 @@ export default async function Home({
       const encodedConf = encodeURIComponent(thirdImage!)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
-      kvDeleteSession(previousFrame);
 
       const confSVG = `data:image/svg+xml,${encodedConf}`;
       return confSVG;
