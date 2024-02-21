@@ -32,10 +32,7 @@ import {
   sessionStateType,
 } from "../sessionStore";
 import { shuffleArray } from "../utils";
-let questions: Question[];
-let rishId: number;
-let allFollowers: any[];
-let answers: string;
+
 const initialState = {
   pollId: "",
   step: 1,
@@ -64,19 +61,10 @@ export default async function Home({
   searchParams: Record<string, string>;
   params: { id: number };
 }) {
-  let rishId: number | undefined;
-  let voter: string | undefined;
   //console.log("RENDERING? ////////////////////");
   const previousFrame = getPreviousFrame<State>(searchParams);
   let sessionState: sessionStateType = await kvGetSession(previousFrame);
-  if (
-    previousFrame &&
-    previousFrame.postBody &&
-    previousFrame.postBody.untrustedData
-  ) {
-    rishId = previousFrame.postBody?.untrustedData?.fid;
-    voter = String(rishId);
-  }
+
   //console.log("PREV FRAME", previousFrame);
 
   const frameMessage = await getFrameMessage(previousFrame.postBody, {
