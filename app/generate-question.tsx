@@ -41,7 +41,7 @@ export async function generatePreviewImage(userFid: string) {
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          paddingLeft: 164,
+          paddingLeft: 105,
           paddingRight: 24,
           lineHeight: 1.2,
           fontSize: 36,
@@ -56,8 +56,8 @@ export async function generatePreviewImage(userFid: string) {
           <img
             src={answerProfile.result.user.pfp.url}
             style={{
-              height: "24rem",
-              width: "24rem",
+              height: "17rem",
+              width: "17rem",
               borderRadius: "100%",
               marginRight: "1rem",
               marginLeft: "10rem",
@@ -66,8 +66,8 @@ export async function generatePreviewImage(userFid: string) {
         ) : (
           <div
             style={{
-              height: "23rem",
-              width: "23rem",
+              height: "15rem",
+              width: "15rem",
               borderRadius: "100%",
               marginRight: "1rem",
               background: "gray",
@@ -84,18 +84,18 @@ export async function generatePreviewImage(userFid: string) {
         >
           <div
             style={{
-              fontSize: "10rem",
+              fontSize: "6rem",
 
               color: "black",
-              lineHeight: "8.8rem",
-              marginBottom: "1.5rem",
+              lineHeight: "5.5rem",
+              marginBottom: "1rem",
             }}
           >
             Ask me anything
           </div>
           <div
             style={{
-              fontSize: "3.2rem",
+              fontSize: "2.2rem",
               color: "darkgray",
               display: "flex",
               flexDirection: "column",
@@ -105,15 +105,15 @@ export async function generatePreviewImage(userFid: string) {
 
             <img
               src={`${baseUrl}/images/Popdadix.png`}
-              style={{ height: "1.9rem", width: "21rem", marginTop: "0.5rem" }}
+              style={{ height: "1.5rem", width: "14.5rem", marginTop: "0.5rem" }}
             />
           </div>
         </div>
       </div>
     </div>,
     {
-      width: 1146,
-      height: 600,
+      width: 764,
+      height: 400,
       fonts: [
         {
           name: "Inter",
