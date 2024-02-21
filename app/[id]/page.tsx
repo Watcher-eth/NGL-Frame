@@ -90,7 +90,7 @@ export default async function Home({
     { ...initialState, uuid: randomUUID() },
     previousFrame
   );
-  if (state.step === 1 && sessionState.question.id) {
+  if (state.step === 1 && sessionState.question.question !== "") {
     kvDeleteSession(previousFrame);
   }
 
@@ -113,6 +113,7 @@ export default async function Home({
     console.log("Is creator", userFid, urlFid, isCreator);
   }
   firstImage = await generatePreviewImage(String(urlFid)); //await generatePreviewImage(urlFid!);
+  console.log(" creator", previousFrame, userFid, urlFid, isCreator);
 
   //If question get input
   //Create your own and share
@@ -140,7 +141,11 @@ export default async function Home({
   }
 
   //If answer get questions
-  if (isCreator && state.step === 2 && !sessionState.questions[0]) {
+  if (
+    isCreator &&
+    state.step === 2 &&
+    sessionState.questions[0]?.question === ""
+  ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
     console.log("CREATOR STEP 2", urlFid, userFid, questions);
 
@@ -160,7 +165,6 @@ export default async function Home({
 
   if (
     !isCreator &&
-    state.step === 2 &&
     !sessionState.questions[0] &&
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {

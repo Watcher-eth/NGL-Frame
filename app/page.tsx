@@ -88,8 +88,8 @@ export default async function Home({
     { ...initialState, uuid: randomUUID() },
     previousFrame
   );
-  if (state.step === 1 && sessionState.question.id) {
-    kvDeleteSession(previousFrame);
+  if (state.step === 1 && sessionState.question.id !== "") {
+    await kvDeleteSession(previousFrame);
   }
 
   state.pollId = sessionState.question ? sessionState.question?.id! : "";
@@ -107,9 +107,10 @@ export default async function Home({
   let isCreator;
   console.log("Step", state.step);
   if (previousFrame?.postBody?.untrustedData) {
-    console.log("Is creator", isCreator);
     isCreator = String(userFid) === urlFid;
+    console.log("Is creator", isCreator);
   }
+
   firstImage = await generatePreviewImage(urlFid); //await generatePreviewImage(urlFid!);
 
   //If question get input
@@ -118,12 +119,12 @@ export default async function Home({
   if (
     !isCreator &&
     state.step === 2 &&
-    previousFrame.postBody?.untrustedData.buttonIndex === 2
+    previousFrame.postBody?.untrustedData.buttonIndex !== 2
   ) {
     console.log("LOG 2", state.step);
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
-    kvSetSession(previousFrame, sessionState);
+    await kvSetSession(previousFrame, sessionState);
     // await setQuestion({
     //   askerId: String(userFid),
     //   receiverId: String(urlFid),
@@ -148,12 +149,12 @@ export default async function Home({
     console.log("CREATOR STEP ", questions);
 
     sessionState.questions = questions;
-    kvSetSession(previousFrame, sessionState);
+    await kvSetSession(previousFrame, sessionState);
   }
 
   if (isCreator && state.step === 2) {
     sessionState.question = sessionState.questions[0]!;
-    kvSetSession(previousFrame, sessionState);
+    await kvSetSession(previousFrame, sessionState);
     console.log("Step 2", sessionState.questions[0]);
 
     secondImage = await generateConfirmationImage(
@@ -162,7 +163,7 @@ export default async function Home({
   }
   //TODO: GET QUESTIONS AND SHUFFLE
 
-  const rotateArrayToLeft = () => {
+  async function rotateArrayToLeft() {
     if (sessionState.questions.length > 0) {
       // Remove the first item and push it to the end of the array
       const array = sessionState.questions; // This removes the first element
@@ -177,8 +178,8 @@ export default async function Home({
     console.log("ROTATED ?", sessionState.questions);
 
     // Assuming kvSetSession and previousFrame are defined in your context
-    kvSetSession(previousFrame, sessionState);
-  };
+    await kvSetSession(previousFrame, sessionState);
+  }
 
   if (
     previousFrame.postBody?.untrustedData.buttonIndex === 2 &&
@@ -191,7 +192,7 @@ export default async function Home({
   //TODO: after second step store answer and question
   if (isCreator && sessionState.answer.length < 2 && state.step === 3) {
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
-    kvSetSession(previousFrame, sessionState);
+    await kvSetSession(previousFrame, sessionState);
 
     thirdImage = await generateAnswerImage(
       String(userFid),
@@ -241,6 +242,7 @@ export default async function Home({
       <FrameContainer
         postUrl="/frames"
         state={state}
+        pathname="/"
         previousFrame={previousFrame}
       >
         <FrameImage src={image} />
