@@ -96,19 +96,19 @@ export default async function Home({
   //const parts = url.split("/"); // This splits the URL string into an array of parts
   const urlFid = params.id;
   const userFid = previousFrame?.postBody?.untrustedData?.fid;
-  let isCreator;
+  let isCreator: boolean;
   console.log("Step", state.step);
   if (previousFrame?.postBody?.untrustedData) {
     isCreator = String(userFid) === String(urlFid);
-    console.log("Is creator", userFid, urlFid, isCreator);
+    console.log("Is creator", isCreator);
   }
   firstImage = await generatePreviewImage(String(urlFid)); //await generatePreviewImage(urlFid!);
-  console.log(" creator", previousFrame, userFid, urlFid, isCreator);
+  console.log(" creator", previousFrame, userFid, urlFid, isCreator!);
 
   //If question get input
   //Create your own and share
 
-  if (!isCreator && state.step === 2) {
+  if (!isCreator! && state.step === 2) {
     console.log("LOG 2", state.step);
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
@@ -122,17 +122,18 @@ export default async function Home({
     );
   }
 
-  if (
-    !isCreator &&
-    sessionState.question.question.length > 0 &&
-    state.step === 3
-  ) {
-    thirdImage = await generatePreviewImage(String(urlFid!));
+  if (isCreator! === false && state.step === 3) {
+    const thImage = await generatePreviewImage(String(userFid!));
+
+    const thirImage = await create(thImage!);
+    console.log("Third Image");
+    const imageBase64 = thirImage.toString("base64");
+    thirdImage = `data:image/jpeg;base64,${imageBase64}`;
   }
 
   //If answer get questions
   if (
-    isCreator &&
+    isCreator! &&
     state.step === 2 &&
     sessionState.questions[0]?.question === ""
   ) {
@@ -143,7 +144,7 @@ export default async function Home({
     kvSetSession(previousFrame, sessionState);
   }
 
-  if (isCreator && state.step === 2) {
+  if (isCreator! && state.step === 2) {
     sessionState.question = sessionState.questions[0]!;
     kvSetSession(previousFrame, sessionState);
     console.log("Step 2", sessionState.questions[0]);
@@ -154,7 +155,7 @@ export default async function Home({
   }
 
   if (
-    !isCreator &&
+    !isCreator! &&
     !sessionState.questions[0] &&
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
@@ -166,7 +167,7 @@ export default async function Home({
   }
 
   if (
-    !isCreator &&
+    !isCreator! &&
     state.step === 2 &&
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
@@ -206,7 +207,7 @@ export default async function Home({
   }
 
   //TODO: after second step store answer and question
-  if (isCreator && sessionState.answer.length < 2 && state.step === 3) {
+  if (isCreator! && sessionState.answer.length < 2 && state.step === 3) {
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
 
@@ -252,13 +253,16 @@ export default async function Home({
       return confSVG;
     }
 
-    if (state.step === 3) {
+    if (state.step === 3 && isCreator === true) {
       const encodedConf = encodeURIComponent(thirdImage!)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
 
       const confSVG = `data:image/svg+xml,${encodedConf}`;
       return confSVG;
+    }
+    if (state.step === 3 && isCreator === false) {
+      return thirdImage;
     }
 
     return "/images/GasFramePreview.png";
@@ -274,30 +278,30 @@ export default async function Home({
         previousFrame={previousFrame}
       >
         <FrameImage src={image} />
-        {state.step === 1 && !isCreator ? (
+        {state.step === 1 && !isCreator! ? (
           <FrameInput text="Ask me anything" />
         ) : null}
-        {state.step === 1 && isCreator ? (
+        {state.step === 1 && isCreator! ? (
           <FrameButton onClick={dispatch}>See your questions</FrameButton>
         ) : state.step === 1 ? (
           <FrameButton onClick={dispatch}>Send your question</FrameButton>
         ) : null}
-        {state.step === 1 && isCreator ? null : state.step === 1 ? (
+        {state.step === 1 && isCreator! ? null : state.step === 1 ? (
           <FrameButton onClick={dispatch}>See your questions</FrameButton>
         ) : null}
 
-        {state.step === 2 && isCreator ? (
+        {state.step === 2 && isCreator! ? (
           <FrameInput text="Your answer..." />
         ) : null}
-        {state.step === 2 && isCreator ? (
+        {state.step === 2 && isCreator! ? (
           <FrameButton onClick={dispatch}>Answer</FrameButton>
         ) : state.step === 2 ? (
           <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
         ) : null}
-        {state.step === 2 && isCreator ? (
+        {state.step === 2 && isCreator! ? (
           <FrameButton onClick={dispatch}>Next question</FrameButton>
         ) : null}
-        {state.step === 3 && isCreator ? (
+        {state.step === 3 && isCreator! ? (
           <FrameButton
             href={`http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
           >
