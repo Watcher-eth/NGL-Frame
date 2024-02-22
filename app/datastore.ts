@@ -63,6 +63,7 @@ export async function getQuestions(receiverId: string): Promise<Question[]> {
 }
 
 export async function setAnswer(request: SetAnswerRequest): Promise<boolean> {
+  console.log("setting answer");
   try {
     const { rowCount } = await client.sql`
       UPDATE questions

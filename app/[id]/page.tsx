@@ -125,13 +125,41 @@ export default async function Home({
     );
   }
 
-  if (isCreator! === false && state.step === 3) {
+  if (
+    isCreator! === false &&
+    state.step === 3 &&
+    !previousFrame.postBody?.untrustedData.inputText?.length
+  ) {
     const thImage = await generatePreviewImage(String(userFid!));
 
     const thirImage = await create(thImage!);
     console.log("Third Image");
     const imageBase64 = thirImage.toString("base64");
     thirdImage = `data:image/jpeg;base64,${imageBase64}`;
+  }
+
+  if (
+    isCreator! === false &&
+    state.step === 3 &&
+    previousFrame.postBody?.untrustedData.inputText?.length! > 2
+  ) {
+    console.log(
+      "Non creator 3 answer",
+      state.step,
+      previousFrame.postBody?.untrustedData.inputText?.length
+    );
+    sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
+    kvSetSession(previousFrame, sessionState);
+
+    thirdImage = await generateAnswerImage(
+      String(userFid),
+      sessionState.answer,
+      sessionState.question
+    );
+    await setAnswer({
+      questionId: sessionState.question.id,
+      answerText: sessionState.answer,
+    });
   }
 
   //If answer get questions
@@ -210,7 +238,11 @@ export default async function Home({
   }
 
   //TODO: after second step store answer and question
-  if (isCreator! && sessionState.answer.length < 2 && state.step === 3) {
+  if (
+    isCreator! &&
+    previousFrame.postBody?.untrustedData.inputText?.length! > 2 &&
+    state.step === 3
+  ) {
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
 
@@ -265,8 +297,25 @@ export default async function Home({
       const confSVG = `data:image/svg+xml,${encodedConf}`;
       return confSVG;
     }
-    if (state.step === 3 && isCreator === false) {
+    if (
+      state.step === 3 &&
+      isCreator === false &&
+      !previousFrame.postBody?.untrustedData.inputText?.length
+    ) {
       return thirdImage;
+    }
+    if (
+      state.step === 3 &&
+      isCreator === false &&
+      previousFrame.postBody?.untrustedData.inputText?.length
+    ) {
+      const encodedConf = encodeURIComponent(thirdImage!)
+        .replace(/'/g, "%27")
+        .replace(/"/g, "%22");
+
+      const confSVG = `data:image/svg+xml,${encodedConf}`;
+
+      return confSVG;
     }
 
     return "/images/GasFramePreview.png";
@@ -294,19 +343,25 @@ export default async function Home({
           <FrameButton onClick={dispatch}>See your questions</FrameButton>
         ) : null}
 
-        {state.step === 2 && isCreator! ? (
+        {state.step === 2 &&
+        previousFrame.postBody?.untrustedData.buttonIndex === 2 ? (
           <FrameInput text="Your answer..." />
         ) : null}
         {state.step === 2 && isCreator! ? (
           <FrameButton onClick={dispatch}>Answer</FrameButton>
         ) : state.step === 2 ? (
-          <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
+          previousFrame.postBody?.untrustedData.buttonIndex === 2 ? (
+            <FrameButton onClick={dispatch}>Answer</FrameButton>
+          ) : (
+            <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
+          )
         ) : null}
         {state.step === 2 &&
         previousFrame.postBody?.untrustedData.buttonIndex === 2 ? (
           <FrameButton onClick={dispatch}>Next question</FrameButton>
         ) : null}
-        {state.step === 3 && isCreator! ? (
+        {state.step === 3 &&
+        previousFrame.postBody?.untrustedData.inputText! ? (
           <FrameButton
             href={`http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
           >

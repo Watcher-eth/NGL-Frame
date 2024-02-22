@@ -258,13 +258,18 @@ export default async function Home({
           <FrameButton onClick={dispatch}>See your questions</FrameButton>
         ) : null}
 
-        {state.step === 2 && isCreator ? (
+        {state.step === 2 &&
+        previousFrame.postBody?.untrustedData.buttonIndex === 2 ? (
           <FrameInput text="Your answer..." />
         ) : null}
         {state.step === 2 && isCreator ? (
           <FrameButton onClick={dispatch}>Answer</FrameButton>
         ) : state.step === 2 ? (
-          <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
+          previousFrame.postBody?.untrustedData.buttonIndex === 2 ? (
+            <FrameButton onClick={dispatch}>Anser</FrameButton>
+          ) : (
+            <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
+          )
         ) : null}
         {state.step === 2 && isCreator ? (
           <FrameButton onClick={dispatch}>Next question</FrameButton>
