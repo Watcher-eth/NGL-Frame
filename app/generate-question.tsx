@@ -41,7 +41,7 @@ export async function generatePreviewImage(userFid: string) {
           flexDirection: "row",
           justifyContent: "center",
           alignItems: "center",
-          paddingLeft: 42,
+          paddingLeft: 164,
           paddingRight: 24,
           lineHeight: 1.2,
           fontSize: 36,
@@ -56,8 +56,8 @@ export async function generatePreviewImage(userFid: string) {
           <img
             src={answerProfile.result.user.pfp.url}
             style={{
-              height: "11.5rem",
-              width: "11.5rem",
+              height: "24rem",
+              width: "24rem",
               borderRadius: "100%",
               marginRight: "1rem",
               marginLeft: "10rem",
@@ -66,8 +66,8 @@ export async function generatePreviewImage(userFid: string) {
         ) : (
           <div
             style={{
-              height: "13rem",
-              width: "13rem",
+              height: "23rem",
+              width: "23rem",
               borderRadius: "100%",
               marginRight: "1rem",
               background: "gray",
@@ -78,24 +78,24 @@ export async function generatePreviewImage(userFid: string) {
           style={{
             display: "flex",
             flexDirection: "column",
-            paddingLeft: "0.5rem",
+            paddingLeft: "1.5rem",
             marginTop: "1.2rem",
           }}
         >
           <div
             style={{
-              fontSize: "4.3rem",
+              fontSize: "10rem",
 
               color: "black",
-              lineHeight: "3.9rem",
-              marginBottom: "0.3rem",
+              lineHeight: "8.8rem",
+              marginBottom: "1.5rem",
             }}
           >
             Ask me anything
           </div>
           <div
             style={{
-              fontSize: "1.5rem",
+              fontSize: "3.2rem",
               color: "darkgray",
               display: "flex",
               flexDirection: "column",
@@ -105,15 +105,15 @@ export async function generatePreviewImage(userFid: string) {
 
             <img
               src={`${baseUrl}/images/Popdadix.png`}
-              style={{ height: "0.9rem", width: "11rem", marginTop: "0.4rem" }}
+              style={{ height: "1.9rem", width: "21rem", marginTop: "0.5rem" }}
             />
           </div>
         </div>
       </div>
     </div>,
     {
-      width: 513,
-      height: 270,
+      width: 1146,
+      height: 600,
       fonts: [
         {
           name: "Inter",
