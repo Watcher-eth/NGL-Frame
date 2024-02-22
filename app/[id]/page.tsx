@@ -220,11 +220,8 @@ export default async function Home({
       answerText: sessionState.answer,
     });
   }
-  function dataUriToBuffer(uri) {
-    return buffer;
-  }
 
-  async function create(svgDataUri) {
+  async function create(svgDataUri: string) {
     "use server";
     const buffer = Buffer.from(svgDataUri, "utf-8");
 
