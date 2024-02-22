@@ -229,7 +229,6 @@ export default async function Home({
       .toFormat("jpeg", { quality: 80 })
       .toBuffer();
 
-    // ...
     return convertedImage;
   }
   const Fiimage = await create(firstImage);
