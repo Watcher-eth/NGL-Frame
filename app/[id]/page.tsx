@@ -133,7 +133,6 @@ export default async function Home({
     const thImage = await generatePreviewImage(String(userFid!));
 
     const thirImage = await create(thImage!);
-    console.log("Third Image");
     const imageBase64 = thirImage.toString("base64");
     thirdImage = `data:image/jpeg;base64,${imageBase64}`;
   }
@@ -151,11 +150,15 @@ export default async function Home({
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
 
-    thirdImage = await generateAnswerImage(
+    const thImage = await generateAnswerImage(
       String(userFid),
       sessionState.answer,
       sessionState.question
     );
+    console.log("Ansswer image");
+    const thirImage = await create(thImage!);
+    const imageBase64 = thirImage.toString("base64");
+    thirdImage = `data:image/jpeg;base64,${imageBase64}`;
     await setAnswer({
       questionId: sessionState.question.id,
       answerText: sessionState.answer,
@@ -246,11 +249,15 @@ export default async function Home({
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
 
-    thirdImage = await generateAnswerImage(
+    const thImage = await generateAnswerImage(
       String(userFid),
       sessionState.answer,
       sessionState.question
     );
+
+    const thirImage = await create(thImage!);
+    const imageBase64 = thirImage.toString("base64");
+    thirdImage = `data:image/jpeg;base64,${imageBase64}`;
     await setAnswer({
       questionId: sessionState.question.id,
       answerText: sessionState.answer,
@@ -290,18 +297,15 @@ export default async function Home({
     if (state.step === 3 && isCreator === true) {
       kvDeleteSession(previousFrame);
 
-      const encodedConf = encodeURIComponent(thirdImage!)
-        .replace(/'/g, "%27")
-        .replace(/"/g, "%22");
-
-      const confSVG = `data:image/svg+xml,${encodedConf}`;
-      return confSVG;
+      return thirdImage;
     }
     if (
       state.step === 3 &&
       isCreator === false &&
       !previousFrame.postBody?.untrustedData.inputText?.length
     ) {
+      kvDeleteSession(previousFrame);
+
       return thirdImage;
     }
     if (
@@ -309,13 +313,9 @@ export default async function Home({
       isCreator === false &&
       previousFrame.postBody?.untrustedData.inputText?.length
     ) {
-      const encodedConf = encodeURIComponent(thirdImage!)
-        .replace(/'/g, "%27")
-        .replace(/"/g, "%22");
+      kvDeleteSession(previousFrame);
 
-      const confSVG = `data:image/svg+xml,${encodedConf}`;
-
-      return confSVG;
+      return thirdImage;
     }
 
     return "/images/GasFramePreview.png";
