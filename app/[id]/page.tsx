@@ -97,18 +97,21 @@ export default async function Home({
   const urlFid = params.id;
   const userFid = previousFrame?.postBody?.untrustedData?.fid;
   let isCreator: boolean;
-  console.log("Step", state.step);
   if (previousFrame?.postBody?.untrustedData) {
     isCreator = String(userFid) === String(urlFid);
     console.log("Is creator", isCreator);
   }
   firstImage = await generatePreviewImage(String(urlFid)); //await generatePreviewImage(urlFid!);
-  console.log(" creator", previousFrame, userFid, urlFid, isCreator!);
+  console.log(" creator", isCreator!);
 
   //If question get input
   //Create your own and share
 
-  if (!isCreator! && state.step === 2) {
+  if (
+    !isCreator! &&
+    state.step === 2 &&
+    previousFrame.postBody?.untrustedData.buttonIndex !== 2
+  ) {
     console.log("LOG 2", state.step);
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
@@ -133,30 +136,30 @@ export default async function Home({
 
   //If answer get questions
   if (
-    isCreator! &&
+    isCreator! === true &&
     state.step === 2 &&
-    sessionState.questions[0]?.question === ""
+    sessionState.questions.length < 1
   ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
-    console.log("CREATOR STEP 2", urlFid, userFid, questions);
+    console.log("CREATOR STEP 2", sessionState.questions.length);
 
     sessionState.questions = questions;
     kvSetSession(previousFrame, sessionState);
   }
 
-  if (isCreator! && state.step === 2) {
-    sessionState.question = sessionState.questions[0]!;
+  if (isCreator! === true && state.step === 2) {
+    sessionState.question = sessionState.questions[1]!;
     kvSetSession(previousFrame, sessionState);
-    console.log("Step 2", sessionState.questions[0]);
+    console.log("Step 2", sessionState.questions[1]);
 
     secondImage = await generateConfirmationImage(
-      sessionState.questions[0]?.question!
+      sessionState.questions[1]?.question!
     );
   }
 
   if (
-    !isCreator! &&
-    !sessionState.questions[0] &&
+    isCreator! === false &&
+    sessionState.questions.length < 1 &&
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
@@ -167,13 +170,13 @@ export default async function Home({
   }
 
   if (
-    !isCreator! &&
+    isCreator! === false &&
     state.step === 2 &&
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
     sessionState.question = sessionState.questions[0]!;
     kvSetSession(previousFrame, sessionState);
-    console.log("Step 2", sessionState.questions[0]);
+    console.log("Step 2");
 
     secondImage = await generateConfirmationImage(
       sessionState.questions[0]?.question!
@@ -190,7 +193,7 @@ export default async function Home({
         array.push(firstItem); // And adds it to the end
         sessionState.questions = array; // Update the session state with the new array
 
-        console.log("ROTATED ?", sessionState.questions);
+        console.log("ROTATED ?", sessionState.questions, firstItem);
 
         // Ensure kvSetSession is awaited if it returns a Promise
         await kvSetSession(previousFrame, sessionState);
@@ -247,13 +250,14 @@ export default async function Home({
       const encodedConf = encodeURIComponent(secondImage!)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
-      kvDeleteSession(previousFrame);
 
       const confSVG = `data:image/svg+xml,${encodedConf}`;
       return confSVG;
     }
 
     if (state.step === 3 && isCreator === true) {
+      kvDeleteSession(previousFrame);
+
       const encodedConf = encodeURIComponent(thirdImage!)
         .replace(/'/g, "%27")
         .replace(/"/g, "%22");
@@ -298,7 +302,8 @@ export default async function Home({
         ) : state.step === 2 ? (
           <FrameButton onClick={dispatch}>Create your own AMA</FrameButton>
         ) : null}
-        {state.step === 2 && isCreator! ? (
+        {state.step === 2 &&
+        previousFrame.postBody?.untrustedData.buttonIndex === 2 ? (
           <FrameButton onClick={dispatch}>Next question</FrameButton>
         ) : null}
         {state.step === 3 && isCreator! ? (
