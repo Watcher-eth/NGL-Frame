@@ -32,6 +32,8 @@ import {
   sessionStateType,
 } from "../sessionStore";
 import { shuffleArray } from "../utils";
+import axios from "axios";
+import sharp from "sharp";
 
 const initialState = {
   pollId: "",
@@ -218,15 +220,30 @@ export default async function Home({
       answerText: sessionState.answer,
     });
   }
+  function dataUriToBuffer(uri) {
+    return buffer;
+  }
+
+  async function create(svgDataUri) {
+    "use server";
+    const buffer = Buffer.from(svgDataUri, "utf-8");
+
+    const convertedImage = await sharp(buffer)
+      .toFormat("jpeg", { quality: 80 })
+      .toBuffer();
+
+    // ...
+    return convertedImage;
+  }
+  const Fiimage = await create(firstImage);
 
   function getImage() {
     if (state.step === 1) {
-      const encodedConf = encodeURIComponent(firstImage!)
-        .replace(/'/g, "%27")
-        .replace(/"/g, "%22");
+      console.log("image 1", Fiimage);
+      const imageBase64 = Fiimage.toString("base64");
+      const imageDataUri = `data:image/jpeg;base64,${imageBase64}`;
 
-      const confSVG = `data:image/svg+xml,${encodedConf}`;
-      return confSVG;
+      return imageDataUri;
     }
 
     if (state.step === 2) {
