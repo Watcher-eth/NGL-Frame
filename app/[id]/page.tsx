@@ -375,7 +375,7 @@ export default async function Home({
           </FrameButton>
         ) : state.step === 3 ? (
           <FrameButton
-            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20anon%20&embeds%5B%5D=https://ngl-fc.vercel.app/${userFid}`}
+            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20anon.%20&embeds%5B%5D=https://ngl-fc.vercel.app/${userFid}`}
           >
             Share your AMA
           </FrameButton>
