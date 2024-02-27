@@ -131,9 +131,12 @@ export default async function Home({
       receiverId: String(urlFid),
       questionText: previousFrame.postBody?.untrustedData.inputText!,
     });
-    secondImage = await generateConfirmationImage(
-      sessionState.question.question
+    const thiImage = await generateConfirmationImage(
+      sessionState.questions[0]?.question!
     );
+    const thirImage = await create(thiImage!);
+    const imageBase64 = thirImage.toString("base64");
+    secondImage = `data:image/jpeg;base64,${imageBase64}`;
   }
 
   if (
