@@ -194,9 +194,9 @@ export default async function Home({
   }
 
   if (isCreator! === true && state.step === 2) {
-    sessionState.question = sessionState.questions[1]!;
+    sessionState.question = sessionState.questions[0]!;
     kvSetSession(previousFrame, sessionState);
-    console.log("Step 2", sessionState.questions[1]);
+    console.log("Step 2", sessionState.questions[0]);
 
     const thiImage = await generateConfirmationImage(
       sessionState.questions[0]?.question!
