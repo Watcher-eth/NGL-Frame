@@ -132,7 +132,7 @@ export default async function Home({
       questionText: previousFrame.postBody?.untrustedData.inputText!,
     });
     const thiImage = await generateConfirmationImage(
-      sessionState.questions[0]?.question!
+      previousFrame.postBody?.untrustedData.inputText!
     );
     const thirImage = await create(thiImage!);
     const imageBase64 = thirImage.toString("base64");
