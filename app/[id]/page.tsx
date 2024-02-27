@@ -369,13 +369,13 @@ export default async function Home({
         {state.step === 3 &&
         previousFrame.postBody?.untrustedData.inputText! ? (
           <FrameButton
-            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20!%20%F0%9F%94%A5%20Check%20out%20who%20sent%20you%20compliments!%20&embeds%5B%5D=http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
+            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20anon.%20&embeds%5B%5D=http://ngl-fc.vercel.app/a/${sessionState.question.id}`}
           >
             Share your Answer
           </FrameButton>
         ) : state.step === 3 ? (
           <FrameButton
-            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20!%20%F0%9F%94%A5%20Check%20out%20who%20sent%20you%20compliments!%20&embeds%5B%5D=https://ngl-fc.vercel.app/${userFid}`}
+            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20anon%20&embeds%5B%5D=https://ngl-fc.vercel.app/${userFid}`}
           >
             Share your AMA
           </FrameButton>
