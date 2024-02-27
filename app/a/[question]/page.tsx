@@ -32,6 +32,7 @@ import {
   sessionStateType,
 } from "../../sessionStore";
 import { getAnswer } from "../../datastore";
+import { create } from "../../[id]/page";
 let questions: Question[];
 let rishId: number;
 let allFollowers: any[];
@@ -113,7 +114,7 @@ export default async function Home({
   if (state.step === 1) {
     const answer = await getAnswer(urlParam);
     console.log("Answer", answer);
-    thirdImage = await generateAnswerImage(
+    const thiImage = await generateAnswerImage(
       String(answer?.userId),
       answer?.answerText!,
       {
@@ -121,40 +122,30 @@ export default async function Home({
         question: answer?.question!,
       }
     );
+    const thirImage = await create(thiImage!);
+    const imageBase64 = thirImage.toString("base64");
+    thirdImage = `data:image/jpeg;base64,${imageBase64}`;
   }
 
   //TODO: after second step store answer and question
   if (state.step === 2) {
-    firstImage = await generatePreviewImage(String(userFid)); //await generatePreviewImage(urlFid!);
+    const fiImage = await generatePreviewImage(String(userFid)); //await generatePreviewImage(urlFid!);
+    const thirImage = await create(fiImage!);
+    const imageBase64 = thirImage.toString("base64");
+    firstImage = `data:image/jpeg;base64,${imageBase64}`;
   }
   function getImage() {
     if (state.step === 1) {
-      const encodedConf = encodeURIComponent(thirdImage!)
-        .replace(/'/g, "%27")
-        .replace(/"/g, "%22");
-
-      const confSVG = `data:image/svg+xml,${encodedConf}`;
-      return confSVG;
+      return thirdImage;
     }
 
     if (state.step === 2) {
-      const encodedConf = encodeURIComponent(firstImage!)
-        .replace(/'/g, "%27")
-        .replace(/"/g, "%22");
-
-      const confSVG = `data:image/svg+xml,${encodedConf}`;
-      return confSVG;
+      return firstImage;
     }
 
-    const encodedConf = encodeURIComponent(thirdImage!)
-      .replace(/'/g, "%27")
-      .replace(/"/g, "%22");
-
-    const confSVG = `data:image/svg+xml,${encodedConf}`;
-    return confSVG;
+    return thirdImage;
   }
   const image = getImage();
-  console.log("Image");
   return (
     <div>
       What are you doing here?. <Link href="/debug">Debug</Link>

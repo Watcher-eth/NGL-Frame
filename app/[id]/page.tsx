@@ -39,7 +39,16 @@ const initialState = {
   pollId: "",
   step: 1,
 };
+export async function create(svgDataUri: string) {
+  "use server";
+  const buffer = Buffer.from(svgDataUri, "utf-8");
 
+  const convertedImage = await sharp(buffer)
+    .toFormat("jpeg", { quality: 80 })
+    .toBuffer();
+
+  return convertedImage;
+}
 const reducer: FrameReducer<State> = (state, action) => {
   //console.log("ACTION ", action);
   //TODO: SHUFFLE NO ADD
@@ -264,16 +273,6 @@ export default async function Home({
     });
   }
 
-  async function create(svgDataUri: string) {
-    "use server";
-    const buffer = Buffer.from(svgDataUri, "utf-8");
-
-    const convertedImage = await sharp(buffer)
-      .toFormat("jpeg", { quality: 80 })
-      .toBuffer();
-
-    return convertedImage;
-  }
   const Fiimage = await create(firstImage);
 
   function getImage() {
@@ -337,10 +336,10 @@ export default async function Home({
         {state.step === 1 && isCreator! ? (
           <FrameButton onClick={dispatch}>See your questions</FrameButton>
         ) : state.step === 1 ? (
-          <FrameButton onClick={dispatch}>Send your question</FrameButton>
+          <FrameButton onClick={dispatch}>Send 📩</FrameButton>
         ) : null}
         {state.step === 1 && isCreator! ? null : state.step === 1 ? (
-          <FrameButton onClick={dispatch}>See your questions</FrameButton>
+          <FrameButton onClick={dispatch}>Your questions 👀</FrameButton>
         ) : null}
 
         {state.step === 2 &&
