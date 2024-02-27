@@ -194,9 +194,12 @@ export default async function Home({
     kvSetSession(previousFrame, sessionState);
     console.log("Step 2", sessionState.questions[1]);
 
-    secondImage = await generateConfirmationImage(
-      sessionState.questions[1]?.question!
+    const thiImage = await generateConfirmationImage(
+      sessionState.questions[0]?.question!
     );
+    const thirImage = await create(thiImage!);
+    const imageBase64 = thirImage.toString("base64");
+    secondImage = `data:image/jpeg;base64,${imageBase64}`;
   }
 
   if (
@@ -220,9 +223,12 @@ export default async function Home({
     kvSetSession(previousFrame, sessionState);
     console.log("Step 2");
 
-    secondImage = await generateConfirmationImage(
+    const thiImage = await generateConfirmationImage(
       sessionState.questions[0]?.question!
     );
+    const thirImage = await create(thiImage!);
+    const imageBase64 = thirImage.toString("base64");
+    secondImage = `data:image/jpeg;base64,${imageBase64}`;
   }
   //TODO: GET QUESTIONS AND SHUFFLE
   const rotateArrayToLeft = async () => {
@@ -287,12 +293,7 @@ export default async function Home({
     }
 
     if (state.step === 2) {
-      const encodedConf = encodeURIComponent(secondImage!)
-        .replace(/'/g, "%27")
-        .replace(/"/g, "%22");
-
-      const confSVG = `data:image/svg+xml,${encodedConf}`;
-      return confSVG;
+      return secondImage;
     }
 
     if (state.step === 3 && isCreator === true) {
@@ -369,7 +370,9 @@ export default async function Home({
             Share your Answer
           </FrameButton>
         ) : state.step === 3 ? (
-          <FrameButton href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20!%20%F0%9F%94%A5%20Check%20out%20who%20sent%20you%20compliments!%20&embeds%5B%5D=https://ngl-fc.vercel.app/${userFid}`}>
+          <FrameButton
+            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20!%20%F0%9F%94%A5%20Check%20out%20who%20sent%20you%20compliments!%20&embeds%5B%5D=https://ngl-fc.vercel.app/${userFid}`}
+          >
             Share your AMA
           </FrameButton>
         ) : null}
