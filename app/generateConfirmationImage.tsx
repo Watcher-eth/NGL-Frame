@@ -64,7 +64,11 @@ export async function generateConfirmationImage(question: string) {
               textAlign: "center",
             }}
           >
-            {question !== undefined ? question : "No questions yet..."}
+            {question !== null
+              ? question === undefined
+                ? "No questions yet..."
+                : question
+              : "No questions yet..."}
           </div>
           <div
             style={{
@@ -76,7 +80,11 @@ export async function generateConfirmationImage(question: string) {
               color: darkerHex,
             }}
           >
-            {question !== undefined ? "[anon]" : "Let your frens know"}
+            {question !== null
+              ? question === undefined
+                ? "Let your frens know"
+                : "[anon]"
+              : "Let your frens know"}
           </div>
         </div>
       </div>
