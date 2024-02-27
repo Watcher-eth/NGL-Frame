@@ -56,6 +56,7 @@ export async function generatePreviewImage(userFid: string) {
           <img
             src={answerProfile.result.user.pfp.url}
             style={{
+              objectFit: "cover",
               height: "24rem",
               width: "24rem",
               borderRadius: "100%",

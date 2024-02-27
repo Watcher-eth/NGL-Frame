@@ -127,16 +127,17 @@ export default async function Home({
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
-    await setQuestion({
-      receiverId: String(urlFid),
-      questionText: previousFrame.postBody?.untrustedData.inputText!,
-    });
+
     const thiImage = await generateConfirmationImage(
       previousFrame.postBody?.untrustedData.inputText!
     );
     const thirImage = await create(thiImage!);
     const imageBase64 = thirImage.toString("base64");
     secondImage = `data:image/jpeg;base64,${imageBase64}`;
+    await setQuestion({
+      receiverId: String(urlFid),
+      questionText: previousFrame.postBody?.untrustedData.inputText!,
+    });
   }
 
   if (
