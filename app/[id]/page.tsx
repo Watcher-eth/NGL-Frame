@@ -227,7 +227,9 @@ export default async function Home({
     console.log("Step 2");
 
     const thiImage = await generateConfirmationImage(
-      sessionState.questions[0]?.question!
+      sessionState.questions[0]?.question !== null
+        ? sessionState.questions[0]?.question
+        : undefined
     );
     const thirImage = await create(thiImage!);
     const imageBase64 = thirImage.toString("base64");

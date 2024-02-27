@@ -11,7 +11,7 @@ const interRegPath = join(process.cwd(), "public/Qilka.otf");
 let interReg = fs.readFileSync(interRegPath);
 
 // Message should contain poll no
-export async function generateConfirmationImage(question: string) {
+export async function generateConfirmationImage(question: string | undefined) {
   //const address = validMessage.data.
 
   const randomColor = getRandomColor();
