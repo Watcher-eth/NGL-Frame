@@ -73,14 +73,13 @@ export default async function Home({
     // ...DEBUG_HUB_OPTIONS,
     fetchHubContext: true,
   });
-  console.log("Search params", searchParams, params.id);
 
   const [state, dispatch] = useFramesReducer<State>(
     reducer,
     { ...initialState, uuid: randomUUID() },
     previousFrame
   );
-  if (state.step === 1 && sessionState.question.question !== "") {
+  if (state.step === 1) {
     kvDeleteSession(previousFrame);
   }
 
@@ -184,7 +183,7 @@ export default async function Home({
   if (
     isCreator! === true &&
     state.step === 2 &&
-    sessionState.questions.length < 1
+    sessionState.questions.length < 2
   ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
     console.log("CREATOR STEP 2", sessionState.questions.length);
@@ -208,11 +207,11 @@ export default async function Home({
 
   if (
     isCreator! === false &&
-    sessionState.questions.length < 1 &&
+    sessionState.questions.length < 2 &&
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
-    console.log("Not CREATOR STEP 2", urlFid, userFid, questions);
+    console.log("Not CREATOR STEP 2", questions);
 
     sessionState.questions = questions;
     kvSetSession(previousFrame, sessionState);
@@ -239,6 +238,7 @@ export default async function Home({
     if (sessionState.questions.length > 0) {
       // Remove the first item and push it to the end of the array
       const array = [...sessionState.questions]; // Clone the array to avoid direct mutation
+      console.log("BEfore ?", sessionState.questions);
 
       const firstItem = array.shift(); // This removes the first element
       if (firstItem !== undefined) {
