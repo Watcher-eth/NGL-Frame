@@ -32,7 +32,7 @@ import {
   sessionStateType,
 } from "../../sessionStore";
 import { getAnswer } from "../../datastore";
-import { create } from "../../[id]/page";
+import sharp from "sharp";
 let questions: Question[];
 let rishId: number;
 let allFollowers: any[];
@@ -95,6 +95,16 @@ export default async function Home({
     kvDeleteSession(previousFrame);
   }
 
+  async function create(svgDataUri: string) {
+    "use server";
+    const buffer = Buffer.from(svgDataUri, "utf-8");
+
+    const convertedImage = await sharp(buffer)
+      .toFormat("jpeg", { quality: 80 })
+      .toBuffer();
+
+    return convertedImage;
+  }
   state.pollId = sessionState.question ? sessionState.question?.id! : "";
 
   //Images

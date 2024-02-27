@@ -39,16 +39,7 @@ const initialState = {
   pollId: "",
   step: 1,
 };
-export async function create(svgDataUri: string) {
-  "use server";
-  const buffer = Buffer.from(svgDataUri, "utf-8");
 
-  const convertedImage = await sharp(buffer)
-    .toFormat("jpeg", { quality: 80 })
-    .toBuffer();
-
-  return convertedImage;
-}
 const reducer: FrameReducer<State> = (state, action) => {
   //console.log("ACTION ", action);
   //TODO: SHUFFLE NO ADD
@@ -94,6 +85,17 @@ export default async function Home({
   }
 
   state.pollId = sessionState.question ? sessionState.question?.id! : "";
+
+  async function create(svgDataUri: string) {
+    "use server";
+    const buffer = Buffer.from(svgDataUri, "utf-8");
+
+    const convertedImage = await sharp(buffer)
+      .toFormat("jpeg", { quality: 80 })
+      .toBuffer();
+
+    return convertedImage;
+  }
 
   //Images
   let firstImage: string;
