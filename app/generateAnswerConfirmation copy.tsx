@@ -63,9 +63,7 @@ export async function generateAnswerImage(
         >
           {question.question}
         </div>
-        <div
-          style={{ fontSize: "5.5rem", color: "white", textAlign: "center" }}
-        >
+        <div style={{ fontSize: "5rem", color: "white", textAlign: "center" }}>
           {answer}
         </div>
         <div tw="flex items-center ">
