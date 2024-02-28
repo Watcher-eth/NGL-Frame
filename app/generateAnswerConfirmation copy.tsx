@@ -57,13 +57,21 @@ export async function generateAnswerImage(
           style={{
             fontSize: "2.8rem",
             color: darkerHex,
-            padding: "0 5rem",
+            padding: "0 3rem",
             textAlign: "center",
+            lineHeight: 2.7,
           }}
         >
           {question.question}
         </div>
-        <div style={{ fontSize: "5rem", color: "white", textAlign: "center" }}>
+        <div
+          style={{
+            fontSize: "5rem",
+            color: "white",
+            textAlign: "center",
+            lineHeight: 4.9,
+          }}
+        >
           {answer}
         </div>
         <div tw="flex items-center ">
