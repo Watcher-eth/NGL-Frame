@@ -53,7 +53,7 @@ const reducer: FrameReducer<State> = (state, action) => {
   return {
     pollId: state.pollId,
     uuid: randomUUID(),
-    step: step ,
+    step: step,
   };
 };
 
@@ -173,8 +173,7 @@ export default async function Home({
 
         {state.step === 2 ? (
           <FrameButton
-            onClick={dispatch}
-            href={`https://warpcast.com/~/compose?text=I%20just%20answered%20!%20%F0%9F%94%A5%20this%20!%20Ask%20me%20anything%20.%20&embeds%5B%5D=http://ngl-fc.vercel.app/${userFid}`}
+            href={`https://warpcast.com/~/compose?text=Ask%20me%20anything%20.%20&embeds%5B%5D=http://ngl-fc.vercel.app/${userFid}`}
           >
             Share your AMA
           </FrameButton>

@@ -185,6 +185,8 @@ export default async function Home({
     state.step === 2 &&
     sessionState.questions.length < 2
   ) {
+    console.log("CREATOR STEP 2", sessionState.questions.length);
+
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
     console.log("CREATOR STEP 2", sessionState.questions.length);
 
