@@ -66,7 +66,7 @@ export async function generateAnswerImage(
         </div>
         <div
           style={{
-            fontSize: "5rem",
+            fontSize: "4.8rem",
             color: "white",
             textAlign: "center",
             lineHeight: 4.9,
