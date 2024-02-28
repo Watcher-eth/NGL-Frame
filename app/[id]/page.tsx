@@ -347,12 +347,12 @@ export default async function Home({
           <FrameInput text="Ask me anything" />
         ) : null}
         {state.step === 1 && isCreator! ? (
-          <FrameButton onClick={dispatch}>See your questions</FrameButton>
+          <FrameButton onClick={dispatch}>Your Inbox 👀</FrameButton>
         ) : state.step === 1 ? (
-          <FrameButton onClick={dispatch}>Send 📩</FrameButton>
+          <FrameButton onClick={dispatch}>Ask 📩</FrameButton>
         ) : null}
         {state.step === 1 && isCreator! ? null : state.step === 1 ? (
-          <FrameButton onClick={dispatch}>Your questions 👀</FrameButton>
+          <FrameButton onClick={dispatch}>Your Inbox 👀</FrameButton>
         ) : null}
 
         {state.step === 2 &&
