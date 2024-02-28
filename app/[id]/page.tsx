@@ -223,11 +223,13 @@ export default async function Home({
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
     sessionState.question = sessionState.questions[0]!;
-    kvSetSession(previousFrame, sessionState);
+    if (sessionState.questions.length > 1) {
+      kvSetSession(previousFrame, sessionState);
+    }
     console.log("Step 2");
 
     const thiImage = await generateConfirmationImage(
-      sessionState.questions[0]?.question !== null
+      sessionState.questions.length < 1
         ? sessionState.questions[0]?.question
         : undefined
     );
