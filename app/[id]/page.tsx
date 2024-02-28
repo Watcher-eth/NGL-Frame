@@ -109,10 +109,10 @@ export default async function Home({
   let isCreator: boolean;
   if (previousFrame?.postBody?.untrustedData) {
     isCreator = String(userFid) === String(urlFid);
-    console.log("Is creator", isCreator);
+    //console.log("Is creator", isCreator);
   }
   firstImage = await generatePreviewImage(String(urlFid)); //await generatePreviewImage(urlFid!);
-  console.log(" creator", isCreator!);
+  //console.log(" creator", isCreator!);
 
   //If question get input
   //Create your own and share
@@ -122,7 +122,7 @@ export default async function Home({
     state.step === 2 &&
     previousFrame.postBody?.untrustedData.buttonIndex !== 2
   ) {
-    console.log("LOG 2", state.step);
+   // console.log("LOG 2", state.step);
     sessionState.question.question =
       previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
@@ -156,11 +156,11 @@ export default async function Home({
     state.step === 3 &&
     previousFrame.postBody?.untrustedData.inputText?.length! > 2
   ) {
-    console.log(
-      "Non creator 3 answer",
-      state.step,
-      previousFrame.postBody?.untrustedData.inputText?.length
-    );
+    //console.log(
+     // "Non creator 3 answer",
+    //  state.step,
+    //  previousFrame.postBody?.untrustedData.inputText?.length
+   // );
     sessionState.answer = previousFrame.postBody?.untrustedData.inputText!;
     kvSetSession(previousFrame, sessionState);
 
@@ -169,7 +169,7 @@ export default async function Home({
       sessionState.answer,
       sessionState.question
     );
-    console.log("Ansswer image");
+    //console.log("Ansswer image");
     const thirImage = await create(thImage!);
     const imageBase64 = thirImage.toString("base64");
     thirdImage = `data:image/jpeg;base64,${imageBase64}`;
@@ -185,10 +185,10 @@ export default async function Home({
     state.step === 2 &&
     sessionState.questions.length < 2
   ) {
-    console.log("CREATOR STEP 2", sessionState.questions.length);
+   // console.log("CREATOR STEP 2", sessionState.questions.length);
 
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
-    console.log("CREATOR STEP 2", sessionState.questions.length);
+    //console.log("CREATOR STEP 2", sessionState.questions.length);
 
     sessionState.questions = questions;
     kvSetSession(previousFrame, sessionState);
@@ -197,7 +197,7 @@ export default async function Home({
   if (isCreator! === true && state.step === 2) {
     sessionState.question = sessionState.questions[0]!;
     kvSetSession(previousFrame, sessionState);
-    console.log("Step 2", sessionState.questions[0]);
+    //console.log("Step 2", sessionState.questions[0]);
 
     const thiImage = await generateConfirmationImage(
       sessionState.questions[0]?.question!
@@ -213,7 +213,7 @@ export default async function Home({
     previousFrame.postBody?.untrustedData?.buttonIndex === 2
   ) {
     const questions = await getQuestions(String(userFid)); // Retrieve questions for receiverId 1
-    console.log("Not CREATOR STEP 2", questions);
+   // console.log("Not CREATOR STEP 2", questions);
 
     sessionState.questions = questions;
     if (questions.length > 1) {
@@ -230,7 +230,7 @@ export default async function Home({
     if (sessionState.questions.length > 1) {
       kvSetSession(previousFrame, sessionState);
     }
-    console.log("Step 2", sessionState.questions.length);
+   // console.log("Step 2", sessionState.questions.length);
 
     const thiImage = await generateConfirmationImage(
       sessionState.questions.length > 1
@@ -246,14 +246,14 @@ export default async function Home({
     if (sessionState.questions.length > 0) {
       // Remove the first item and push it to the end of the array
       const array = [...sessionState.questions]; // Clone the array to avoid direct mutation
-      console.log("BEfore ?", sessionState.questions);
+     // console.log("BEfore ?", sessionState.questions);
 
       const firstItem = array.shift(); // This removes the first element
       if (firstItem !== undefined) {
         array.push(firstItem); // And adds it to the end
         sessionState.questions = array; // Update the session state with the new array
 
-        console.log("ROTATED ?", sessionState.questions, firstItem);
+      //  console.log("ROTATED ?", sessionState.questions, firstItem);
 
         // Ensure kvSetSession is awaited if it returns a Promise
         await kvSetSession(previousFrame, sessionState);
@@ -265,7 +265,6 @@ export default async function Home({
     previousFrame.postBody?.untrustedData.buttonIndex === 2 &&
     state.step === 2
   ) {
-    console.log("SHUFFLING ");
     await rotateArrayToLeft(); // Ensure this call is awaited if within an async function or handled accordingly if not
   }
 
@@ -297,7 +296,6 @@ export default async function Home({
 
   function getImage() {
     if (state.step === 1) {
-      console.log("image 1", Fiimage);
       const imageBase64 = Fiimage.toString("base64");
       const imageDataUri = `data:image/jpeg;base64,${imageBase64}`;
 

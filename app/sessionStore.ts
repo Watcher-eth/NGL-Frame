@@ -72,7 +72,7 @@ export async function kvGetSession(
         question: result["question"] as Question,
         questions: result["questions"] as Question[],
       };
-      console.log("FOUND SESSION ", fidStr, state);
+      console.log("FOUND SESSION ", fidStr, );
       return state;
     }
   }

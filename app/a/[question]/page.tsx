@@ -84,7 +84,7 @@ export default async function Home({
     // ...DEBUG_HUB_OPTIONS,
     fetchHubContext: true,
   });
-  console.log("Search params", searchParams);
+  //console.log("Search params", searchParams);
 
   const [state, dispatch] = useFramesReducer<State>(
     reducer,
@@ -118,12 +118,12 @@ export default async function Home({
   const urlParam = params.question;
   const userFid = previousFrame?.postBody?.untrustedData?.fid;
   let isCreator;
-  console.log("Step", state.step);
+ // console.log("Step", state.step);
 
   //TODO: after second step store answer and question
   if (state.step === 1) {
     const answer = await getAnswer(urlParam);
-    console.log("Answer", answer);
+   // console.log("Answer", answer);
     const thiImage = await generateAnswerImage(
       String(answer?.userId),
       answer?.answerText!,
