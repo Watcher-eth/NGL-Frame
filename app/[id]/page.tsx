@@ -214,7 +214,9 @@ export default async function Home({
     console.log("Not CREATOR STEP 2", questions);
 
     sessionState.questions = questions;
-    kvSetSession(previousFrame, sessionState);
+    if (questions.length > 1) {
+      kvSetSession(previousFrame, sessionState);
+    }
   }
 
   if (
@@ -226,10 +228,10 @@ export default async function Home({
     if (sessionState.questions.length > 1) {
       kvSetSession(previousFrame, sessionState);
     }
-    console.log("Step 2");
+    console.log("Step 2", sessionState.questions.length);
 
     const thiImage = await generateConfirmationImage(
-      sessionState.questions.length < 1
+      sessionState.questions.length > 1
         ? sessionState.questions[0]?.question
         : undefined
     );
