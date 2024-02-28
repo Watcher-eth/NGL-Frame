@@ -59,7 +59,6 @@ export async function generateAnswerImage(
             color: darkerHex,
             padding: "0 3rem",
             textAlign: "center",
-            lineHeight: 2.7,
           }}
         >
           {question.question}
